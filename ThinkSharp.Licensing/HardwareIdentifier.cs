@@ -39,7 +39,7 @@ namespace ThinkSharp.Licensing
 #if NET6_0_OR_GREATER
             if (OperatingSystem.IsWindows())
 #endif
-            theComputerCharacteristics = new WindowsComputerCharacteristics();
+              theComputerCharacteristics = new WindowsComputerCharacteristics();
         }
 
         /// <summary>
