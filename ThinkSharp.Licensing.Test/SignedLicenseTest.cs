@@ -117,11 +117,13 @@ namespace ThinkSharp.Licensing.Test
         [TestMethod]
         public void TestHasXXXProperties_True()
         {
-            var key = "BwIAAACkAABSU0EyAAQAAAEAAQALrzxPFiBp4EN5aeLtZZ4sTvcfYn+fSpmxJvhSUxP/9fm+uaWwJ+n7+jc4Zf2tB+WDulTJo5ryauHgKjx5MHMmWNLr77mD3ws11BC61VDt65fIY4DLsvn49ZYajJy3oUwDvyEsnGArUH3IUhCTv/OWbHovmb69Xlg90mEcsIhOm2WKki+1cc7ZeBANtR57SMLv3qDH+DQqTxBb4UOHmJs4YfrMjqOEXBg0pDLT4HHzIz7WVu9ltKJdQZn626aGdMivhKQqxiJj3YsdFiLgM4BZk9ZGCxI2AJLp9Q/IRwqGKg4T0NlNWbqH1P5Zvq2nxVxSQEI/ARpUK1C8CIsnXVfGyRNp5nkFlM05O2HXhwLWhoHn5Dm76FMz5mClkFaRe8pK113sZK0Tw6sEVCrFMXeaiXSGK9xZifvnioOq9jRgp1fCpc5vLSE4VFGZ2vl89hrsfPKAIDIx5vXgNfOGjJXoDfHUkurih1qBG5Aiie5bD8e+LPVQ7jkM9CzFHRC756n1yAwSLUiv2cpbXD/YhZuHOOIljWjgcHKV9b9eyQXUilC8CQOE/1JLUHWLskhRH6NKRo1HVPxsuZpKLfkWEqti6TF8A4gllaJdjJEqq226EaXaRvP2RoqxjRBUKeT/NBN4focrEmjQpMKTAhMmpIutsXEqLbcXbR+0gBbvdIoEcEBbgizGJK8NJtWnli6qh4EEuaqtBYXkP0Io/bZJsc+WuWpHn9lXWIy/cPDTik+uEgbPF5MZEcmLVKJEsdnpcEc=";
+            var publicKey = "BgIAAACkAABSU0ExAAQAAAEAAQAFIs58zPLD7fmD/wtMHI9LCSYPQy1Iep7jPC0+Ct4Tiw8jV1QaxQmHb3y88IsTggqTjOsh3hIx2keQRJr4YfQQ1NNzaZiOG7E7wRR7EC3NKNLsX7lp2VKsOzye8sNZR8o+5J4fWNCTZV3BEmNTE3aCxCV4hGU7NLwG5wHeVoD6qw==";
+            var privateKey = "BwIAAACkAABSU0EyAAQAAAEAAQAFIs58zPLD7fmD/wtMHI9LCSYPQy1Iep7jPC0+Ct4Tiw8jV1QaxQmHb3y88IsTggqTjOsh3hIx2keQRJr4YfQQ1NNzaZiOG7E7wRR7EC3NKNLsX7lp2VKsOzye8sNZR8o+5J4fWNCTZV3BEmNTE3aCxCV4hGU7NLwG5wHeVoD6q2NeAWMvkbvcR4qdFxGwBb/XK9RSv2aR3WDgbtmQbMLkeg/qQyAvdxDGGjx0pDIX0woZM48MBQvknSB6YVo7G9d3VpIvLZR5S28UjVHe2OougXMk7br4lFDaLThCAUf2OsmpyEq8GEnNrvq7nXRHXPL1LFGrua9Qu2wGugUyVKzM98CuF8Wx904V6cF/aebM30rFSfTTAt0C7LCs3sK7ZfS1R2GmLwOlX7wgfOHALCfwGzXCAiheKrFTmc2lGeBzSWm53g0Dh8J3FG+ljzVJ9QCdJz5DGyVo/0XZwKGCV/H1q3Fw4wsPhMBFJT7cgevxSRS7wAKitN9phIE3YxzgyZsDJELs6iz7zI8yUAJt0YGaRQfl7A2nieJqRUlul+1KZkR6L20ZAPieh+LqgiOeEeCv/5c/LpZvwFn/9WdQKIxRyQeR8/yqUMgRrmu1ffpUT2XgHf3qvycAzjsBSQE7Z/LRk3nv+1fyStzLC/CzWwvK5WrsAu49gDsiTWpjYPq/F6riIVUdXbezj1GoxcRnkB59ftGe0bnqICD2aZ3FKj6zB/vE/lg2Bzx1cZh86L4uOxMcGCSZa8pN+mD3ylZ6dAg=";
+
 
             var lic = Lic.Builder
-                .WithRsaPrivateKey(key)
-                .WithHardwareIdentifier("HardwareIdentifier")
+                .WithRsaPrivateKey(privateKey)
+                .WithHardwareIdentifier(HardwareIdentifier.ForCurrentComputer())
                 .WithSerialNumber(SerialNumber.Create("GSA"))
                 .ExpiresIn(TimeSpan.FromDays(100))
                 .WithProperty("Name", "Bill Gates")
@@ -131,15 +133,26 @@ namespace ThinkSharp.Licensing.Test
             Assert.IsTrue(lic.HasExpirationDate);
             Assert.IsTrue(lic.HasHardwareIdentifier);
             Assert.IsTrue(lic.HasSerialNumber);
+
+            var serialized = lic.Serialize();
+            var deserializedLic = Lic.Verifier
+                .WithRsaPublicKey(publicKey)                
+                .WithApplicationCode("GSA")
+                .LoadAndVerify(serialized);
+
+            Assert.IsTrue(deserializedLic.HasExpirationDate);
+            Assert.IsTrue(deserializedLic.HasHardwareIdentifier);
+            Assert.IsTrue(deserializedLic.HasSerialNumber);
         }
 
         [TestMethod]
         public void TestHasXXXProperties_False()
         {
-            var key = "BwIAAACkAABSU0EyAAQAAAEAAQALrzxPFiBp4EN5aeLtZZ4sTvcfYn+fSpmxJvhSUxP/9fm+uaWwJ+n7+jc4Zf2tB+WDulTJo5ryauHgKjx5MHMmWNLr77mD3ws11BC61VDt65fIY4DLsvn49ZYajJy3oUwDvyEsnGArUH3IUhCTv/OWbHovmb69Xlg90mEcsIhOm2WKki+1cc7ZeBANtR57SMLv3qDH+DQqTxBb4UOHmJs4YfrMjqOEXBg0pDLT4HHzIz7WVu9ltKJdQZn626aGdMivhKQqxiJj3YsdFiLgM4BZk9ZGCxI2AJLp9Q/IRwqGKg4T0NlNWbqH1P5Zvq2nxVxSQEI/ARpUK1C8CIsnXVfGyRNp5nkFlM05O2HXhwLWhoHn5Dm76FMz5mClkFaRe8pK113sZK0Tw6sEVCrFMXeaiXSGK9xZifvnioOq9jRgp1fCpc5vLSE4VFGZ2vl89hrsfPKAIDIx5vXgNfOGjJXoDfHUkurih1qBG5Aiie5bD8e+LPVQ7jkM9CzFHRC756n1yAwSLUiv2cpbXD/YhZuHOOIljWjgcHKV9b9eyQXUilC8CQOE/1JLUHWLskhRH6NKRo1HVPxsuZpKLfkWEqti6TF8A4gllaJdjJEqq226EaXaRvP2RoqxjRBUKeT/NBN4focrEmjQpMKTAhMmpIutsXEqLbcXbR+0gBbvdIoEcEBbgizGJK8NJtWnli6qh4EEuaqtBYXkP0Io/bZJsc+WuWpHn9lXWIy/cPDTik+uEgbPF5MZEcmLVKJEsdnpcEc=";
+            var publicKey = "BgIAAACkAABSU0ExAAQAAAEAAQAFIs58zPLD7fmD/wtMHI9LCSYPQy1Iep7jPC0+Ct4Tiw8jV1QaxQmHb3y88IsTggqTjOsh3hIx2keQRJr4YfQQ1NNzaZiOG7E7wRR7EC3NKNLsX7lp2VKsOzye8sNZR8o+5J4fWNCTZV3BEmNTE3aCxCV4hGU7NLwG5wHeVoD6qw==";
+            var privateKey = "BwIAAACkAABSU0EyAAQAAAEAAQAFIs58zPLD7fmD/wtMHI9LCSYPQy1Iep7jPC0+Ct4Tiw8jV1QaxQmHb3y88IsTggqTjOsh3hIx2keQRJr4YfQQ1NNzaZiOG7E7wRR7EC3NKNLsX7lp2VKsOzye8sNZR8o+5J4fWNCTZV3BEmNTE3aCxCV4hGU7NLwG5wHeVoD6q2NeAWMvkbvcR4qdFxGwBb/XK9RSv2aR3WDgbtmQbMLkeg/qQyAvdxDGGjx0pDIX0woZM48MBQvknSB6YVo7G9d3VpIvLZR5S28UjVHe2OougXMk7br4lFDaLThCAUf2OsmpyEq8GEnNrvq7nXRHXPL1LFGrua9Qu2wGugUyVKzM98CuF8Wx904V6cF/aebM30rFSfTTAt0C7LCs3sK7ZfS1R2GmLwOlX7wgfOHALCfwGzXCAiheKrFTmc2lGeBzSWm53g0Dh8J3FG+ljzVJ9QCdJz5DGyVo/0XZwKGCV/H1q3Fw4wsPhMBFJT7cgevxSRS7wAKitN9phIE3YxzgyZsDJELs6iz7zI8yUAJt0YGaRQfl7A2nieJqRUlul+1KZkR6L20ZAPieh+LqgiOeEeCv/5c/LpZvwFn/9WdQKIxRyQeR8/yqUMgRrmu1ffpUT2XgHf3qvycAzjsBSQE7Z/LRk3nv+1fyStzLC/CzWwvK5WrsAu49gDsiTWpjYPq/F6riIVUdXbezj1GoxcRnkB59ftGe0bnqICD2aZ3FKj6zB/vE/lg2Bzx1cZh86L4uOxMcGCSZa8pN+mD3ylZ6dAg=";
 
             var lic = Lic.Builder
-                .WithRsaPrivateKey(key)
+                .WithRsaPrivateKey(privateKey)
                 .WithoutHardwareIdentifier()
                 .WithoutSerialNumber()
                 .WithoutExpiration()
@@ -150,6 +163,16 @@ namespace ThinkSharp.Licensing.Test
             Assert.IsFalse(lic.HasExpirationDate);
             Assert.IsFalse(lic.HasHardwareIdentifier);
             Assert.IsFalse(lic.HasSerialNumber);
+
+            var serialized = lic.Serialize();
+            var deserializedLic = Lic.Verifier
+                .WithRsaPublicKey(publicKey)
+                .WithoutApplicationCode()
+                .LoadAndVerify(serialized);
+
+            Assert.IsFalse(deserializedLic.HasExpirationDate);
+            Assert.IsFalse(deserializedLic.HasHardwareIdentifier);
+            Assert.IsFalse(deserializedLic.HasSerialNumber);
         }
 
 

@@ -7,7 +7,7 @@ using System.IO;
 namespace ThinkSharp.Licensing.Helper
 {
     internal static class ValidationHelper
-    {
+    {   
         public static void IsValidFolderName(this string value)
         {
             value.IsValidFileName();

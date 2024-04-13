@@ -4,6 +4,7 @@
 using System;
 using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ThinkSharp.Licensing.Helper;
 
 namespace ThinkSharp.Licensing.Test
 {
@@ -52,7 +53,7 @@ namespace ThinkSharp.Licensing.Test
             Assert.IsNotNull(license);
             Assert.AreEqual(HardwareIdentifier.NoHardwareIdentifier, license.HardwareIdentifier);
             Assert.AreEqual(SerialNumber.NoSerialNumber, license.SerialNumber);
-            Assert.AreEqual(DateTime.MaxValue, license.ExpirationDate);
+            Assert.AreEqual(DateTimeHelper.NoExpiryDateTime, license.ExpirationDate);
             Assert.AreEqual(DateTime.UtcNow.Date, license.IssueDate.Date);
             Assert.AreEqual(0, license.Properties.Count);
         }

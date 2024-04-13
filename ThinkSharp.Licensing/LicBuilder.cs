@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ThinkSharp.Licensing.Helper;
 using ThinkSharp.Licensing.Signing;
 
 namespace ThinkSharp.Licensing
@@ -13,7 +14,7 @@ namespace ThinkSharp.Licensing
         private string myHardwareIdentifier = HardwareIdentifier.NoHardwareIdentifier;
         private string mySerialNumber = SerialNumber.NoSerialNumber;
         private Dictionary<string, string> myProperties = new Dictionary<string, string>();
-        private DateTime myExpirationDate = DateTime.MaxValue;
+        private DateTime myExpirationDate = DateTimeHelper.NoExpiryDateTime;
 
         #region IBuilder_Signer
 

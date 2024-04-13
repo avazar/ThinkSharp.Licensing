@@ -46,7 +46,7 @@ namespace ThinkSharp.Licensing
         /// </summary>
         public DateTime IssueDate { get; }
         /// <summary>
-        /// Date of the expiration (may be <see cref="DateTime.MaxValue"/> for licenses without expiration)
+        /// Date of the expiration (may be '9999/12/31 23:59' for licenses without expiration)
         /// </summary>
         public DateTime ExpirationDate { get; }
         /// <summary>
@@ -76,7 +76,7 @@ namespace ThinkSharp.Licensing
         /// <summary>
         /// Gets a value that indicates if the license expires.
         /// </summary>
-        public bool HasExpirationDate => ExpirationDate != DateTime.MaxValue;
+        public bool HasExpirationDate => ExpirationDate != DateTimeHelper.NoExpiryDateTime;
 
         //  Methods
         // ////////////////////////////////////////////////////////////////////
@@ -130,8 +130,8 @@ namespace ThinkSharp.Licensing
                 var index = 0;
                 var hardwareIdentifier = lines[index++];
                 var serialNumber = lines[index++];
-                var issueDate = DateTime.Parse(lines[index++], CultureInfo.InvariantCulture);
-                var expirationDate = DateTime.Parse(lines[index++], CultureInfo.InvariantCulture);
+                var issueDate = lines[index++].DeserializeDateTime();
+                var expirationDate = lines[index++].DeserializeDateTime();
                 var signature = lines.Last();
 
                 var properties = new Dictionary<string, string>();
@@ -180,8 +180,8 @@ namespace ThinkSharp.Licensing
         {
             sb.AppendLine(HardwareIdentifier);
             sb.AppendLine(SerialNumber);
-            sb.AppendLine(IssueDate.ToString(CultureInfo.InvariantCulture));
-            sb.AppendLine(ExpirationDate.ToString(CultureInfo.InvariantCulture));
+            sb.AppendLine(IssueDate.SerializeDateTime());
+            sb.AppendLine(ExpirationDate.SerializeDateTime());
             foreach (var property in Properties)
                 sb.AppendLine(property.Key + ":" + property.Value);
         }
