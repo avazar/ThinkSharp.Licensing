@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using ThinkSharp.Licensing.Helper;
@@ -17,6 +16,8 @@ namespace ThinkSharp.Licensing
     /// </summary>
     public sealed class SignedLicense
     {
+        private static string[] newLineSeperators = new[] { new string(new[] { '\r', '\n' }), new string(new[] { '\r' }) }; 
+
         //  .ctor
         // ////////////////////////////////////////////////////////////////////
 
@@ -86,14 +87,14 @@ namespace ThinkSharp.Licensing
         {
             if (string.IsNullOrEmpty(content))
                 throw new ArgumentException($"'{nameof(content)}' must not null or empty.");
-            var firstLine = content.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).First();
+            var firstLine = content.Split(newLineSeperators, StringSplitOptions.RemoveEmptyEntries).First();
             var isEncrypted = !Licensing.HardwareIdentifier.IsCheckSumValid(firstLine);
             if (isEncrypted)
             {
                 content = content.Unwrap();
                 content = SignedLicenseEncryption.Dencrypt(content);
             }
-            var lines = (content ?? "").Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            var lines = (content ?? "").Split(newLineSeperators, StringSplitOptions.RemoveEmptyEntries);
 
             if (lines.Length < 4)
                 ThrowInvalidFormatException();
@@ -152,12 +153,21 @@ namespace ThinkSharp.Licensing
 
         internal void Verify(ISigner signer)
         {
-            var sb = new StringBuilder();
+            foreach (var newLineSepaerator in newLineSeperators)
+            {
+                var sb = new StringBuilder();
 
-            WriteLicenseProperties(sb);
+                WriteLicenseProperties(sb, newLineSepaerator);
 
-            if (!signer.Verify(sb.ToString(), Signature))
-                ThrowInvalidSignatureException();
+                var licStr = sb.ToString();
+
+                if (signer.Verify(licStr, Signature))
+                {
+                    return;
+                }
+            }
+
+            ThrowInvalidSignatureException();
         }
 
         internal void Sign(ISigner signer)
@@ -176,14 +186,17 @@ namespace ThinkSharp.Licensing
             sb.Append(Signature); // note: Append because it is the last line
         }
 
-        private void WriteLicenseProperties(StringBuilder sb)
+        private void WriteLicenseProperties(StringBuilder sb, string newLineSeparator = null)
         {
-            sb.AppendLine(HardwareIdentifier);
-            sb.AppendLine(SerialNumber);
-            sb.AppendLine(IssueDate.SerializeDateTime());
-            sb.AppendLine(ExpirationDate.SerializeDateTime());
+            if (newLineSeparator == null)
+                newLineSeparator = Environment.NewLine;
+
+            sb.Append(HardwareIdentifier).Append(newLineSeparator);
+            sb.Append(SerialNumber).Append(newLineSeparator);
+            sb.Append(IssueDate.SerializeDateTime()).Append(newLineSeparator);
+            sb.Append(ExpirationDate.SerializeDateTime()).Append(newLineSeparator);
             foreach (var property in Properties)
-                sb.AppendLine(property.Key + ":" + property.Value);
+                sb.Append(property.Key + ":" + property.Value).Append(newLineSeparator);
         }
 
         private static KeyValuePair<string, string> GetKeyValuePair(string line)
