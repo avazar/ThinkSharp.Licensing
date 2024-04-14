@@ -8,21 +8,31 @@
     <Product>ThinkSharp.Licensing</Product>
     <Description>Simple library with fluent API for creating and verifying signed licenses</Description>
     <PackageTags>License Signing Serial Key Security</PackageTags>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
-    <Version>1.0.0</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Version>1.1.0</Version>
     <PackageLicenseFile>LICENSE.TXT</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/JanDotNet/ThinkSharp.Licensing</PackageProjectUrl>
-    <Copyright>Copyright (c) 2017, 2021 Jan-Niklas Schäfer</Copyright>
+    <Copyright>Copyright (c) 2017, 2024 Jan-Niklas Schäfer</Copyright>
     <PackageId>ThinkSharp.Licensing</PackageId>
     <RepositoryUrl>https://github.com/JanDotNet/ThinkSharp.Licensing.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>1.0,0
+    <PackageReleaseNotes>1.1.0
+* fixed issue with cross-plattform licence verification (#10)
+* HasExpirationDate does not work as expected (#12)
+* SignedLicense does not accept custom issue dates (#13)
+* some non-functional improvements / refactorings
+1.0,0
 * Improved project structure (some non-compatible changes in namespaces)
 * Added support for .net 5.0
 0.2.1
 * Added properties: SignedLicense.HasSerialNumber, SignedLicense.HasHardwareIdentifier, SignedLicense.HasExpirationDate</PackageReleaseNotes>
     <NeutralLanguage></NeutralLanguage>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -30,13 +40,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Management" Version="8.0.0" />
+    <PackageReference Include="System.Management" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="..\LICENSE.TXT">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
 

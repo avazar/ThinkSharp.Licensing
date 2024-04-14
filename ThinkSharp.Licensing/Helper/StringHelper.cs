@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace ThinkSharp.Licensing.Helper
 {
-    public static class StringHelper
+    internal static class StringHelper
     {
         public static string Wrap(this string singleLineString, int columns)
             => string.Join(Environment.NewLine, singleLineString.Split(columns));
