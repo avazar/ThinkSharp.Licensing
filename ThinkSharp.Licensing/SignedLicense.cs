@@ -16,7 +16,7 @@ namespace ThinkSharp.Licensing
     /// </summary>
     public sealed class SignedLicense
     {
-        private static string[] newLineSeperators = new[] { new string(new[] { '\r', '\n' }), new string(new[] { '\r' }) }; 
+        private static string[] newLineSeperators = new[] { new string(new[] { '\r', '\n' }), new string(new[] { '\n' }) }; 
 
         //  .ctor
         // ////////////////////////////////////////////////////////////////////
