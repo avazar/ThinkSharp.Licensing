@@ -39,13 +39,13 @@ namespace ThinkSharp.Licensing
       license.Verify(mySigner);
       // verify application code
       if (!SerialNumber.IsApplicationCodeValid(license.SerialNumber, myApplicationCode))
-        throw new SignedLicenseException($"Application Code '{myApplicationCode}' is not valid for the license.");
+        throw new SignedLicenseInvalidAppException($"Application Code '{myApplicationCode}' is not valid for the license.", license);
       // verify hardware identifier
       if (!HardwareIdentifier.IsValidForCurrentComputer(license.HardwareIdentifier))
-        throw new SignedLicenseException($"License has been activated for another computer.");
+        throw new SignedLicenseInvalidAppException($"License has been activated for another computer.", license);
       // verify expiration date
       if (license.ExpirationDate < DateTime.UtcNow)
-        throw new SignedLicenseException($"License has been expired since '{license.ExpirationDate}'.");
+        throw new SignedLicenseExpiredException($"License has been expired since '{license.ExpirationDate}'.", license);
       return license;
     }
 
